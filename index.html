@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator</title>
+  <style>
+      body { font-family: Arial, sans-serif; padding: 2rem; }
+      input, button { padding: 0.5rem; font-size: 1rem; }
+      #qrImage { margin-top: 1rem; max-width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>QR Code Generator</h1>
+  <form id="qrForm">
+    <label for="urlInput">Enter URL:</label>
+    <input type="url" id="urlInput" name="url" placeholder="https://www.example.com" required />
+    <button type="submit">Generate QR Code</button>
+  </form>
+  <div id="result">
+    <h2>Your QR Code:</h2>
+    <img id="qrImage" alt="QR Code will appear here" />
+  </div>
+
+  <script>
+    document.getElementById('qrForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const urlValue = document.getElementById('urlInput').value;
+      
+      // Replace <YOUR_FUNCTION_URL> with your deployed function's URL (e.g., https://<your_function_app>.azurewebsites.net/api/GenerateQRCode)
+      const functionEndpoint = "azure-qr-code1.azurewebsites.net/api/GenerateQRCode";
+      
+      try {
+        const response = await fetch(functionEndpoint, {
+          method: 'GET', // Or POST if your function expects a POST
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: urlValue }) // adjust if using GET (remove body) or use POST accordingly.
+        });
+        
+        const data = await response.json();
+        
+        // data.qrCodeDataUrl should be the Base64 image URL returned by your function
+        document.getElementById('qrImage').src = data.qrCodeDataUrl;
+      } catch (error) {
+        console.error("Error generating QR Code:", error);
+        alert("Error generating QR Code");
+      }
+    });
+  </script>
+</body>
+</html>
